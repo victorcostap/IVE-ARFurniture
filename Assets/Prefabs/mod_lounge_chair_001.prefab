@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2259321964240782655}
   m_Layer: 0
-  m_Name: lounge_char
+  m_Name: mod_lounge_chair_001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
