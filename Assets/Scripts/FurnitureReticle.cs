@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using Unity.XR.CoreUtils;
 using UnityEngine;
 
@@ -19,6 +20,7 @@ public class FurnitureReticle : MonoBehaviour
     private readonly List<ARRaycastHit> _raycastHits = new List<ARRaycastHit>();
     private Vector3 _screenCenter;
     private GameObject _furnitureObject = null;
+    private bool _firstTime = true;
     
     private void Start()
     {
@@ -35,9 +37,26 @@ public class FurnitureReticle : MonoBehaviour
         if (!raycastManager.Raycast(_screenCenter, _raycastHits, TrackableType.PlaneWithinPolygon)) return;
 
         _furnitureObject.transform.position = _raycastHits[0].pose.position;
+        if (!_firstTime) return;
+        _firstTime = false;
         _furnitureObject.transform.rotation = _raycastHits[0].pose.rotation;
     }
 
+    private void OnEnable()
+    {
+        _firstTime = true;
+    }
+
+    public void ChangeRotation(float rotation)
+    {
+        _furnitureObject.transform.Rotate(Vector3.up, -rotation, Space.World);
+    }
+
+    public Quaternion GetQuaternion()
+    {
+        return _furnitureObject.transform.rotation;
+    }
+    
     public void HideReticle()
     {
         _furnitureObject.SetActive(false);
@@ -56,6 +75,7 @@ public class FurnitureReticle : MonoBehaviour
         }
 
         _furnitureObject = Instantiate(furniture);
+        _furnitureObject.transform.rotation = quaternion.identity;
         if (_furnitureObject.transform.childCount > 0)
         {
             _furnitureObject.transform.GetChild(0).GetComponent<Renderer>().material = transparentMaterial;
@@ -71,6 +91,7 @@ public class FurnitureReticle : MonoBehaviour
     {
         furniture = newFurniture;
         InstantiateFurniture();
+        _firstTime = true;
     }
     
 }
