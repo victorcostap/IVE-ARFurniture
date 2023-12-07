@@ -14,11 +14,12 @@ public class FurnitureSpawner : MonoBehaviour
     public XROrigin xrOrigin;
     public ARRaycastManager raycastManager;
     public ARPlaneManager planeManager;
-
+    public FurnitureReticle reticle;
+    
     private List<ARRaycastHit> _raycastHits = new List<ARRaycastHit>();
     private Vector3 _screenCenter;
-
-    private void Start()
+    
+    private void Awake()
     {
         if (Camera.main == null)
         {
@@ -42,6 +43,15 @@ public class FurnitureSpawner : MonoBehaviour
         var obj = Instantiate(furniture);
         obj.transform.position = _raycastHits[0].pose.position;
         obj.transform.rotation = _raycastHits[0].pose.rotation;
+        
+        reticle.HideReticle();
+        gameObject.SetActive(false);
     }
+
+    public void SwitchFurniture(GameObject newFurniture)
+    {
+        furniture = newFurniture;
+    }
+    
     
 }

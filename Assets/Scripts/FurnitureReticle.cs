@@ -10,15 +10,15 @@ using UnityEngine.XR.ARSubsystems;
 public class FurnitureReticle : MonoBehaviour
 {
     public GameObject furniture;
-
+    public Material transparentMaterial;    
+    
     public XROrigin xrOrigin;
     public ARRaycastManager raycastManager;
     public ARPlaneManager planeManager;
 
     private readonly List<ARRaycastHit> _raycastHits = new List<ARRaycastHit>();
-    private Camera _camera;
     private Vector3 _screenCenter;
-    private GameObject _obj;
+    private GameObject _furnitureObject = null;
     
     private void Start()
     {
@@ -26,20 +26,51 @@ public class FurnitureReticle : MonoBehaviour
         {
             throw new NullReferenceException();
         }
-
-        _obj = Instantiate(furniture);
-        // var material = GetComponent<Renderer>().material;
-        // var col = material.color;
-        // material.color = new Color(col.r, col.g, col.b, 0.5f);
         _screenCenter = Camera.main.ViewportToScreenPoint(new Vector3(0.5f, 0.5f));
+        InstantiateFurniture();
     }
 
     private void Update()
     {
         if (!raycastManager.Raycast(_screenCenter, _raycastHits, TrackableType.PlaneWithinPolygon)) return;
 
-        _obj.transform.position = _raycastHits[0].pose.position;
-        _obj.transform.rotation = _raycastHits[0].pose.rotation;
+        _furnitureObject.transform.position = _raycastHits[0].pose.position;
+        _furnitureObject.transform.rotation = _raycastHits[0].pose.rotation;
+    }
+
+    public void HideReticle()
+    {
+        _furnitureObject.SetActive(false);
+    }
+
+    public void DisplayReticle()
+    {
+        _furnitureObject.SetActive(true);
+    }
+
+    private void InstantiateFurniture()
+    {
+        if (_furnitureObject != null)
+        {
+            Destroy(_furnitureObject);
+        }
+
+        _furnitureObject = Instantiate(furniture);
+        if (_furnitureObject.transform.childCount > 0)
+        {
+            _furnitureObject.transform.GetChild(0).GetComponent<Renderer>().material = transparentMaterial;
+        }
+        else
+        {
+            _furnitureObject.GetComponent<Renderer>().material = transparentMaterial;
+        }
+        
+    }
+    
+    public void SwitchFurniture(GameObject newFurniture)
+    {
+        furniture = newFurniture;
+        InstantiateFurniture();
     }
     
 }
