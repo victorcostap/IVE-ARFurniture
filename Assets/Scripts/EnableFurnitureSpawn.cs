@@ -4,22 +4,23 @@ using UnityEngine;
 
 public class EnableFurnitureSpawn : EnaDisGameObject
 {
-    private FurnitureReticle _reticle;
+    public GameObject reticle;
+    private FurnitureReticle _reticleScript;
 
     private void Start()
     {
-        _reticle = obj.GetComponent<FurnitureReticle>();
+        _reticleScript = reticle.GetComponent<FurnitureReticle>();
     }
     
     public new void EnableGameObject()
     {  
         base.EnableGameObject();
-        _reticle.DisplayReticle();
+        _reticleScript.DisplayReticle();
     }
 
     public new void DisableGameObject()
     {
-        _reticle.HideReticle();
+        _reticleScript.HideReticle();
         base.DisableGameObject();
     }
 }

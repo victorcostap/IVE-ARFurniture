@@ -10,15 +10,11 @@ using UnityEngine.XR.ARSubsystems;
 public class FurnitureSpawner : MonoBehaviour
 {
     public GameObject furniture;
-
-    public XROrigin xrOrigin;
     public ARRaycastManager raycastManager;
-    public ARPlaneManager planeManager;
     
     private List<ARRaycastHit> _raycastHits = new List<ARRaycastHit>();
     private Vector3 _screenCenter;
-    private float _rotation;
-    
+
     private void Awake()
     {
         if (Camera.main == null)
@@ -28,40 +24,30 @@ public class FurnitureSpawner : MonoBehaviour
         _screenCenter = Camera.main.ViewportToScreenPoint(new Vector3(0.5f, 0.5f));
     }
     
-    private void Update()
-    {
-        // //If no touch, do nothing
-        // if (Input.touchCount <= 0) return;
-        //
-        // //If the touch is been held, do nothing
-        // var input = Input.GetTouch(0);
-        // if (input.phase != TouchPhase.Began) return;
-        //
-        // // If no collision, do nothing
-        // if (!raycastManager.Raycast(_screenCenter, _raycastHits, TrackableType.PlaneWithinPolygon)) return;
-        //
-        // var obj = Instantiate(furniture);
-        // obj.transform.position = _raycastHits[0].pose.position;
-        // obj.transform.rotation = _raycastHits[0].pose.rotation;
-        // obj.transform.Rotate(Vector3.up, -_rotation, Space.World);
-        //
-        // reticle.HideReticle();
-        // gameObject.SetActive(false);
-    }
-
-    public bool PlaceFurniture(Quaternion rotation)
+    public bool PlaceFurniture(Quaternion rotation, Material mat = null)
     {
         if (!raycastManager.Raycast(_screenCenter, _raycastHits, TrackableType.PlaneWithinPolygon)) return false;
         
         var obj = Instantiate(furniture);
         obj.transform.position = _raycastHits[0].pose.position;
         obj.transform.rotation = rotation;
+
+        if (mat != null)
+        {
+            GetRenderer(obj).material = mat;
+        }
+        
         return true;
     }
     
-    public void ChangeRotation(float rotation)
+    private Renderer GetRenderer(GameObject go)
     {
-        _rotation = rotation;
+        if (go.transform.childCount > 0)
+        {
+            return go.transform.GetChild(0).GetComponent<Renderer>();
+        }
+
+        return go.GetComponent<Renderer>();
     }
     
     public void SwitchFurniture(GameObject newFurniture)

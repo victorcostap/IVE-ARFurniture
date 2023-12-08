@@ -11,7 +11,8 @@ using UnityEngine.XR.ARSubsystems;
 public class FurnitureReticle : MonoBehaviour
 {
     public GameObject furniture;
-    public Material transparentMaterial;    
+    public Material transparentMaterial;
+    public Material transparentMaterialPlainColor;
     
     public XROrigin xrOrigin;
     public ARRaycastManager raycastManager;
@@ -76,15 +77,17 @@ public class FurnitureReticle : MonoBehaviour
 
         _furnitureObject = Instantiate(furniture);
         _furnitureObject.transform.rotation = quaternion.identity;
+        SetDefaultColor();
+    }
+
+    private Renderer GetRenderer()
+    {
         if (_furnitureObject.transform.childCount > 0)
         {
-            _furnitureObject.transform.GetChild(0).GetComponent<Renderer>().material = transparentMaterial;
+            return _furnitureObject.transform.GetChild(0).GetComponent<Renderer>();
         }
-        else
-        {
-            _furnitureObject.GetComponent<Renderer>().material = transparentMaterial;
-        }
-        
+
+        return _furnitureObject.GetComponent<Renderer>();
     }
     
     public void SwitchFurniture(GameObject newFurniture)
@@ -92,6 +95,19 @@ public class FurnitureReticle : MonoBehaviour
         furniture = newFurniture;
         InstantiateFurniture();
         _firstTime = true;
+    }
+
+    public void ChangeColor(Color color)
+    {
+        var ren = GetRenderer();
+        ren.material = transparentMaterialPlainColor;
+        ren.material.color = new Color(color.r/255, color.g/255, color.b/255, 0.75f);
+    }
+
+    public void SetDefaultColor()
+    {
+        var ren = GetRenderer();
+        ren.material = transparentMaterial;
     }
     
 }
